@@ -56,17 +56,21 @@ PRINT '... Iniciando la creación de las tablas ... Espere por favor ... '
 ----------------------------------------- Creando Tablas ------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------
 /*********************************************************************************************************** */
-IF OBJECT_ID('sch_Rrh.tbRoles') IS NOT NULL -- Valido si la tabla existe, si es así la elimino
-	DROP TABLE sch_Rrh.tbRoles
-GO
+IF OBJECT_ID('sch_Rrh.tbRoles', 'U') IS NOT NULL
+BEGIN
+    -- La tabla 'sch_Rrh.tbRoles' ya existe, por lo que la eliminamos
+    DROP TABLE sch_Rrh.tbRoles;
+END
 CREATE TABLE sch_Rrh.tbRoles
 (
 	idRol	int IDENTITY (1, 1) NOT NULL,   -- Identificador autoincremental
-	nom		nvarchar(30) UNIQUE NOT NULL,	-- Nombre
+	--COLLATE Latin1_General_BIN -> para que la comparación sea sensible a mayúsculas y minúsculas
+	nom		nvarchar(30) COLLATE Latin1_General_BIN UNIQUE NOT NULL ,	-- Nombre
 	det		nvarchar(500),					-- Descripción
 	fecReg	datetime DEFAULT GETDATE(),		-- Fecha de inserción
 
-	CONSTRAINT pk_tbRoles PRIMARY KEY (idRol)
+	CONSTRAINT pk_tbRoles PRIMARY KEY (idRol),
+	CONSTRAINT CK_NombreValido CHECK (nom NOT LIKE '%[^A-Za-z ]%')
 )
 GO
 --ALTER TABLE tbClientes ADD CONSTRAINT pk_Cli PRIMARY KEY (idCli) 
